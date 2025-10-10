@@ -28,7 +28,13 @@ subprojects {
     }
 
     repositories {
-        maven { url = 'https://maven.minecraftforge.net/' }
+        maven {
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name = 'TerraformersMC'
+            url = 'https://maven.terraformersmc.com/'
+        }
     }
 
     loom {

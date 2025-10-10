@@ -1,8 +1,11 @@
 package gardensofthedead;
 
+import com.terraformersmc.biolith.api.biome.BiomePlacement;
+import com.terraformersmc.biolith.api.surface.SurfaceGeneration;
 import gardensofthedead.network.NetworkHandler;
 import gardensofthedead.registry.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.biome.Biomes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,5 +30,12 @@ public class GardensOfTheDead {
         ModParticleTypes.PARTICLE_TYPES.register();
         ModSoundEvents.SOUND_EVENTS.register();
         ModLootConditions.LOOT_CONDITIONS.register();
+    }
+
+    public static void addBiomes() {
+        // TODO migrate to data pack
+        BiomePlacement.replaceNether(Biomes.SOUL_SAND_VALLEY, ModBiomes.SOULBLIGHT_FOREST, 0.5F);
+        BiomePlacement.replaceNether(Biomes.CRIMSON_FOREST, ModBiomes.WHISTLING_WOODS, 0.5F);
+        SurfaceGeneration.addNetherSurfaceRules(GardensOfTheDead.id("rules/nether"), ModSurfaceRules.makeRules());
     }
 }

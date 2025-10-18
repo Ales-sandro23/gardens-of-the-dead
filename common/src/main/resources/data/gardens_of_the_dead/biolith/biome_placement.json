@@ -1,0 +1,16 @@
+{
+  "replacements": [
+    {
+      "dimension": "minecraft:the_nether",
+      "target": "minecraft:soul_sand_valley",
+      "biome": "gardens_of_the_dead:soulblight_forest",
+      "proportion": 0.5
+    },
+    {
+      "dimension": "minecraft:the_nether",
+      "target": "minecraft:crimson_forest",
+      "biome": "gardens_of_the_dead:whistling_woods",
+      "proportion": 0.5
+    }
+  ]
+}

@@ -20,6 +20,6 @@ public class GardensOfTheDeadNeoForge {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(GardensOfTheDead::addBiomes);
+        event.enqueueWork(GardensOfTheDead::addSurfaceRules);
     }
 }

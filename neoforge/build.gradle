@@ -50,6 +50,8 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
+
+    include modImplementation("com.github.glitchfiend:TerraBlender-neoforge:${rootProject.terrablender_version}")
 }
 
 processResources {

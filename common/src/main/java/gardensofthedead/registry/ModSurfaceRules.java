@@ -3,7 +3,6 @@ package gardensofthedead.registry;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Noises;
-import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 
 import static net.minecraft.world.level.levelgen.SurfaceRules.*;
@@ -11,17 +10,44 @@ import static net.minecraft.world.level.levelgen.SurfaceRules.*;
 // TODO cleanup a bit more maybe
 public class ModSurfaceRules {
 
-    private static final SurfaceRules.RuleSource GRAVEL = block(Blocks.GRAVEL);
-    private static final SurfaceRules.RuleSource NETHERRACK = block(Blocks.NETHERRACK);
-    private static final SurfaceRules.RuleSource SOUL_SAND = block(Blocks.SOUL_SAND);
-    private static final SurfaceRules.RuleSource SOUL_SOIL = block(Blocks.SOUL_SOIL);
-    private static final SurfaceRules.RuleSource NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK);
-    private static final SurfaceRules.RuleSource CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
+    private static final RuleSource
+            BEDROCK = block(Blocks.BEDROCK),
+            LAVA = block(Blocks.LAVA),
+            GRAVEL = block(Blocks.GRAVEL),
+            NETHERRACK = block(Blocks.NETHERRACK),
+            SOUL_SAND = block(Blocks.SOUL_SAND),
+            SOUL_SOIL = block(Blocks.SOUL_SOIL),
+            NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK),
+            CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
 
-    public static SurfaceRules.RuleSource makeRules() {
-        SurfaceRules.ConditionSource aboveLava = yBlockCheck(VerticalAnchor.absolute(31), 0);
+    public static RuleSource makeRules() {
+        ConditionSource aboveLava = yBlockCheck(VerticalAnchor.absolute(31), 0);
 
-        SurfaceRules.RuleSource soulblightForest = sequence(
+        RuleSource commonRules = sequence(
+                ifTrue(
+                        verticalGradient(
+                                "bedrock_floor",
+                                VerticalAnchor.bottom(),
+                                VerticalAnchor.aboveBottom(5)
+                        ),
+                        BEDROCK
+                ),
+                ifTrue(
+                        not(
+                                verticalGradient(
+                                        "bedrock_roof",
+                                        VerticalAnchor.belowTop(5),
+                                        VerticalAnchor.top()
+                                )
+                        ),
+                        BEDROCK
+                ),
+                ifTrue(yBlockCheck(VerticalAnchor.belowTop(5), 0), NETHERRACK),
+                ifTrue(ON_FLOOR, ifTrue(not(aboveLava), ifTrue(hole(), LAVA)))
+        );
+
+        RuleSource soulblightForest = sequence(
+                commonRules,
                 ifTrue(
                         UNDER_CEILING,
                         sequence(
@@ -41,7 +67,8 @@ public class ModSurfaceRules {
                 NETHERRACK
         );
 
-        SurfaceRules.RuleSource whistlingWoods = sequence(
+        RuleSource whistlingWoods = sequence(
+                commonRules,
                 ifTrue(ON_FLOOR,
                         ifTrue(not(noiseCondition(Noises.NETHERRACK, 0.4D)),
                                 ifTrue(aboveLava,
@@ -61,16 +88,16 @@ public class ModSurfaceRules {
         );
     }
 
-    private static SurfaceRules.RuleSource gravelBeach() {
-        SurfaceRules.ConditionSource above30 = yStartCheck(VerticalAnchor.absolute(30), 0);
-        SurfaceRules.ConditionSource below35 = not(yStartCheck(VerticalAnchor.absolute(35), 0));
-        SurfaceRules.ConditionSource patchNoise = noiseCondition(Noises.PATCH, -0.012D);
+    private static RuleSource gravelBeach() {
+        ConditionSource above30 = yStartCheck(VerticalAnchor.absolute(30), 0);
+        ConditionSource below35 = not(yStartCheck(VerticalAnchor.absolute(35), 0));
+        ConditionSource patchNoise = noiseCondition(Noises.PATCH, -0.012D);
         return ifTrue(patchNoise,
                 ifTrue(above30, ifTrue(below35, GRAVEL))
         );
     }
 
-    private static SurfaceRules.RuleSource block(Block block) {
+    private static RuleSource block(Block block) {
         return state(block.defaultBlockState());
     }
 }

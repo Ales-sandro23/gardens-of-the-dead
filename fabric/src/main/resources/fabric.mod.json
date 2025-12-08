@@ -20,6 +20,9 @@
     ],
     "client": [
       "gardensofthedead.fabric.GardensOfTheDeadFabricClient"
+    ],
+    "terrablender": [
+      "gardensofthedead.fabric.GardensOfTheDeadFabric"
     ]
   },
   "mixins": [
@@ -27,8 +30,8 @@
   ],
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.21.1",
+    "minecraft": ">=1.21",
     "architectury": "*",
-    "biolith": "*"
+    "terrablender": "*"
   }
 }

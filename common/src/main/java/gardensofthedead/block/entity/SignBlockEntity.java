@@ -15,4 +15,9 @@ public class SignBlockEntity extends net.minecraft.world.level.block.entity.Sign
     public BlockEntityType<?> getType() {
         return ModBlockEntityTypes.SIGN.get();
     }
+
+    @Override
+    public boolean isValidBlockState(BlockState blockState) {
+        return getType().isValid(blockState);
+    }
 }

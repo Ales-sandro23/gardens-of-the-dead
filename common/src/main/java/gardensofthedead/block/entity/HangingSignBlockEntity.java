@@ -15,4 +15,9 @@ public class HangingSignBlockEntity extends net.minecraft.world.level.block.enti
     public BlockEntityType<?> getType() {
         return ModBlockEntityTypes.HANGING_SIGN.get();
     }
+
+    @Override
+    public boolean isValidBlockState(BlockState blockState) {
+        return getType().isValid(blockState);
+    }
 }

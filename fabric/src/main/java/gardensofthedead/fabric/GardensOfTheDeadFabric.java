@@ -10,7 +10,7 @@ public class GardensOfTheDeadFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         GardensOfTheDead.init();
-        GardensOfTheDead.addSurfaceRules();
+        GardensOfTheDead.addBiomes();
 
         ModItems.addCompostables(CompostingChanceRegistry.INSTANCE::add);
     }

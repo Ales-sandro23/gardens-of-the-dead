@@ -6,70 +6,68 @@ import net.minecraft.world.level.levelgen.Noises;
 import net.minecraft.world.level.levelgen.SurfaceRules;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 
-// TODO cleanup a bit more
-public class ModSurfaceRules extends SurfaceRules {
+public class ModSurfaceRules {
 
-    private static final RuleSource GRAVEL = block(Blocks.GRAVEL);
-    private static final RuleSource NETHERRACK = block(Blocks.NETHERRACK);
-    private static final RuleSource SOUL_SAND = block(Blocks.SOUL_SAND);
-    private static final RuleSource SOUL_SOIL = block(Blocks.SOUL_SOIL);
-    private static final RuleSource NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK);
-    private static final RuleSource CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
+    private static final SurfaceRules.RuleSource GRAVEL = block(Blocks.GRAVEL);
+    private static final SurfaceRules.RuleSource NETHERRACK = block(Blocks.NETHERRACK);
+    private static final SurfaceRules.RuleSource SOUL_SAND = block(Blocks.SOUL_SAND);
+    private static final SurfaceRules.RuleSource SOUL_SOIL = block(Blocks.SOUL_SOIL);
+    private static final SurfaceRules.RuleSource NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK);
+    private static final SurfaceRules.RuleSource CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
 
-    public static RuleSource makeRules() {
-        ConditionSource aboveLava = yBlockCheck(VerticalAnchor.absolute(31), 0);
+    public static SurfaceRules.RuleSource makeRules() {
+        SurfaceRules.ConditionSource aboveOrAtLava = SurfaceRules.yBlockCheck(VerticalAnchor.absolute(31), 0);
+        SurfaceRules.ConditionSource above30 = SurfaceRules.yStartCheck(VerticalAnchor.absolute(30), 0);
+        SurfaceRules.ConditionSource below35 = SurfaceRules.not(SurfaceRules.yStartCheck(VerticalAnchor.absolute(35), 0));
+        SurfaceRules.ConditionSource patchNoise = SurfaceRules.noiseCondition(Noises.PATCH, -0.012D);
+        SurfaceRules.ConditionSource netherrackNoise = SurfaceRules.noiseCondition(Noises.NETHERRACK, 0.4D);
+        SurfaceRules.RuleSource gravelBeach = SurfaceRules.ifTrue(patchNoise, SurfaceRules.ifTrue(above30, SurfaceRules.ifTrue(below35, GRAVEL)));
+        SurfaceRules.ConditionSource soulBlightNetherrackNoise = SurfaceRules.noiseCondition(Noises.NETHER_STATE_SELECTOR, -0.2D);
+        SurfaceRules.ConditionSource soulBlightSoulSandNoise = SurfaceRules.noiseCondition(Noises.NETHER_STATE_SELECTOR, 0.3D);
+        SurfaceRules.ConditionSource netherWartNoise = SurfaceRules.noiseCondition(Noises.NETHER_WART, 1.17D);
 
-        RuleSource soulblightForest = ifTrue(isBiome(ModBiomes.SOULBLIGHT_FOREST),
-                sequence(
-                        ifTrue(
-                                UNDER_CEILING,
-                                sequence(
-                                        ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
-                                        ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, -0.2D), SOUL_SOIL),
-                                        NETHERRACK
-                                )
-                        ),
-                        ifTrue(
-                                UNDER_FLOOR,
-                                sequence(
-                                        gravelBeach(),
-                                        ifTrue(noiseCondition(Noises.NETHER_STATE_SELECTOR, 0.3D), SOUL_SAND),
-                                        SOUL_SOIL
-                                )
-                        ),
-                        NETHERRACK
-                )
-        );
-
-        RuleSource whistlingWoods = ifTrue(isBiome(ModBiomes.WHISTLING_WOODS),
-                sequence(
-                        ifTrue(ON_FLOOR,
-                                ifTrue(not(noiseCondition(Noises.NETHERRACK, 0.4D)),
-                                        ifTrue(aboveLava,
-                                                sequence(
-                                                        ifTrue(noiseCondition(Noises.NETHER_WART, 1.17D), NETHER_WART_BLOCK),
-                                                        CRIMSON_NYLIUM
+        // TODO cleanup this a bit more
+        return SurfaceRules.sequence(
+                SurfaceRules.ifTrue(SurfaceRules.isBiome(ModBiomes.SOULBLIGHT_FOREST),
+                        SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(
+                                        SurfaceRules.UNDER_CEILING,
+                                        SurfaceRules.sequence(
+                                                SurfaceRules.ifTrue(soulBlightSoulSandNoise, SOUL_SAND),
+                                                SurfaceRules.ifTrue(soulBlightNetherrackNoise, SOUL_SOIL),
+                                                NETHERRACK
+                                        )
+                                ),
+                                SurfaceRules.ifTrue(
+                                        SurfaceRules.UNDER_FLOOR,
+                                        SurfaceRules.sequence(
+                                                gravelBeach,
+                                                SurfaceRules.ifTrue(soulBlightSoulSandNoise, SOUL_SAND),
+                                                SOUL_SOIL
+                                        )
+                                ),
+                                NETHERRACK
+                        )
+                ),
+                SurfaceRules.ifTrue(SurfaceRules.isBiome(ModBiomes.WHISTLING_WOODS),
+                        SurfaceRules.sequence(
+                                SurfaceRules.ifTrue(SurfaceRules.ON_FLOOR,
+                                        SurfaceRules.ifTrue(SurfaceRules.not(netherrackNoise),
+                                                SurfaceRules.ifTrue(aboveOrAtLava,
+                                                        SurfaceRules.sequence(
+                                                                SurfaceRules.ifTrue(netherWartNoise, NETHER_WART_BLOCK),
+                                                                CRIMSON_NYLIUM
+                                                        )
                                                 )
                                         )
-                                )
-                        ),
-                        NETHERRACK
+                                ),
+                                NETHERRACK
+                        )
                 )
         );
-
-        return sequence(soulblightForest, whistlingWoods);
     }
 
-    private static RuleSource gravelBeach() {
-        ConditionSource above30 = yStartCheck(VerticalAnchor.absolute(30), 0);
-        ConditionSource below35 = not(yStartCheck(VerticalAnchor.absolute(35), 0));
-        ConditionSource patchNoise = noiseCondition(Noises.PATCH, -0.012D);
-        return ifTrue(patchNoise,
-                ifTrue(above30, ifTrue(below35, GRAVEL))
-        );
-    }
-
-    private static RuleSource block(Block block) {
-        return state(block.defaultBlockState());
+    private static SurfaceRules.RuleSource block(Block block) {
+        return SurfaceRules.state(block.defaultBlockState());
     }
 }
